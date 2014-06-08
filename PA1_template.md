@@ -7,7 +7,7 @@
 
 
 ```r
-setwd("D:/Documents/DataScience/proj1")
+setwd("D:/Documents/DataScience/proj1/represproj1")
 library(data.table)
 library(ggplot2)
 steps_taken <- data.table(read.table("activity.csv", sep = ",", header = TRUE, 
