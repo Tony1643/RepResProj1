@@ -209,7 +209,7 @@ A histogram of the total number of steps taken each day is shown below.
 
 
 ```r
-hist(aggregate(imputed ~ date, steps_taken, sum)$imputed, main = "Imputed /n Total number of steps per day", 
+hist(aggregate(imputed ~ date, steps_taken, sum)$imputed, main = "Total number of steps per day (Inputed data)", 
     xlab = "Steps per day")
 ```
 
@@ -470,3 +470,5 @@ p + facet_grid(daytype ~ .) + theme(strip.text = element_text(face = "bold",
 
 ![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
 
+
+The subject is more active earlier in the morning on weekdays and more active later at night on weekends.

@@ -72,7 +72,7 @@ A histogram of the total number of steps taken each day is shown below.
 
 ```{r fig.width=7, fig.height=6}
 hist(aggregate(imputed ~ date, steps_taken, sum)$imputed, 
-     main="Imputed /n Total number of steps per day",
+     main="Total number of steps per day (Inputed data)",
      xlab = "Steps per day")
 mean_steps_imp <- data.table(aggregate(imputed ~ date, steps_taken, mean, na.rm=TRUE))
 median_steps_imp <- data.table(aggregate(imputed ~ date, steps_taken, median, na.rm = TRUE))
