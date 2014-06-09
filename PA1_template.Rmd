@@ -6,7 +6,7 @@
 
 
 ```{r}
-setwd("D:/Documents/DataScience/proj1/represproj1")
+setwd("c:/users/tonyl/documents/datascience/represproj1")
 library(data.table)
 library(ggplot2)
 steps_taken <- data.table(read.table("activity.csv", sep=",", header = TRUE, na.strings = "NA"))
@@ -20,11 +20,11 @@ A histogram of the total number of steps taken per day is made.
 hist(aggregate(steps ~ date, steps_taken, sum)$steps, 
      main="Total number of steps per day",
      xlab = "Steps per day")
-mean_steps <- data.table(aggregate(steps ~ date, steps_taken, mean, na.rm=TRUE))
-median_steps <- data.table(aggregate(steps ~ date, steps_taken, median, na.rm = TRUE))
+mean_steps <- mean(data.table(aggregate(steps ~ date, steps_taken, sum, na.rm=TRUE))$steps)
+median_steps <- median(data.table(aggregate(steps ~ date, steps_taken, sum, na.rm=TRUE))$steps)
 ```
 
-The mean number of steps per day are.
+The mean total number of steps per day .
 
 ```{r}
 mean_steps
@@ -35,8 +35,6 @@ The median number of steps per day are.
 ```{r}
 median_steps
 ```
-
-It is noted that 53 days in the 61 day period have means and medians reported. The other eight days consist of missing values (NA) in the dataset.
 
 ## Average Daily Activity Pattern ##
 
@@ -74,32 +72,24 @@ A histogram of the total number of steps taken each day is shown below.
 hist(aggregate(imputed ~ date, steps_taken, sum)$imputed, 
      main="Total number of steps per day (Inputed data)",
      xlab = "Steps per day")
-mean_steps_imp <- data.table(aggregate(imputed ~ date, steps_taken, mean, na.rm=TRUE))
-median_steps_imp <- data.table(aggregate(imputed ~ date, steps_taken, median, na.rm = TRUE))
+mean_steps_imp <- mean(data.table(aggregate(imputed ~ date, steps_taken, sum, na.rm=TRUE))$imputed)
+median_steps_imp <- median(data.table(aggregate(imputed ~ date, steps_taken, sum, na.rm=TRUE))$imputed)
 ```
-The mean number of steps per day are.
+The mean total number of steps per day is:
 
 ```{r}
 mean_steps_imp
 ```
 
-The median number of steps per day are.
+The median total number of steps per day is:
 
 ```{r}
 median_steps_imp
 ```
 
-Inspection reveals that the 8 missing days now have reported means and medians with the medians non-zero for the days with iputed values. This contrasts with other days where zeroes make up at least 50% of daily measuments.
+Inspection reveals that initially there were 8 missing days now have reported means and medians with the medians non-zero for the days with iputed values. This contrasts with other days where zeroes make up at least 50% of daily measuments.
 
 Clearly, there should be no differences, other than for the eight days with imputed step measurements, between the original daily means and the daily means with imputed values. This is confirmed in the following table comparing the means before and after imputation:
-
-```{r}
-setkey(mean_steps,date)
-setkey(mean_steps_imp,date)
-compare_means <- merge(mean_steps,mean_steps_imp)
-compare_means$diff <- compare_means$imputed - compare_means$steps
-compare_means
-```
 
 The impact of the imputation is to provide measurements for eight complete days where no steps were measured. A better imputation regime could take account of the presence 50% of time periods there were zero steps measured, perhaps relating to resting, sleeping and other non-movement activities.
 
