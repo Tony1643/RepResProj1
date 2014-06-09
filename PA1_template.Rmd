@@ -4,9 +4,10 @@
 
 57,568 observations on three variables: **steps**, **date** and **interval** are read into an R data table, *steps_taken*, from the csv file *activity.csv*. Libraries to be used in the analysis are also made available.
 
+The term **interval** is a little inaccurate. The interval labels are in fact times measure from midnight (at time 0). Thus, 'interval 1235 is in fact 12.35pm and not the 1235th interval. I decided not to transform the 'intervals' into sequential interval numbers since the only impact in this study will be to introduce small gaps in the time series graph. Since no hypotheses are tested or predictions made this approach will have little impact.
 
 ```{r}
-setwd("c:/users/tonyl/documents/datascience/represproj1")
+setwd("d:/documents/datascience/proj1/represproj1")
 library(data.table)
 library(ggplot2)
 steps_taken <- data.table(read.table("activity.csv", sep=",", header = TRUE, na.strings = "NA"))
@@ -17,23 +18,24 @@ steps_taken <- data.table(read.table("activity.csv", sep=",", header = TRUE, na.
 A histogram of the total number of steps taken per day is made. 
 
 ```{r fig.width=7, fig.height=6}
-hist(aggregate(steps ~ date, steps_taken, sum)$steps, 
+hist(aggregate(steps ~ date, steps_taken, sum)$steps,
+     breaks = c(0, 2500, 5000, 7500, 10000, 12500, 15000, 17500, 20000, 22500, 25000),
      main="Total number of steps per day",
      xlab = "Steps per day")
 mean_steps <- mean(data.table(aggregate(steps ~ date, steps_taken, sum, na.rm=TRUE))$steps)
 median_steps <- median(data.table(aggregate(steps ~ date, steps_taken, sum, na.rm=TRUE))$steps)
 ```
 
-The mean total number of steps per day .
+The mean total number of steps per day is calculated
 
 ```{r}
-mean_steps
+print(mean_steps, digits=6)
 ```
 
-The median number of steps per day are.
+The median number of steps per day is
 
 ```{r}
-median_steps
+print(median_steps, digits=6)
 ```
 
 ## Average Daily Activity Pattern ##
@@ -51,11 +53,17 @@ p <- ggplot(by_interval, aes(x=interval, y=steps))+ geom_line()
 p + xlab("Interval") + ylab("Steps") + ggtitle("Mean steps per time interval")
 ```
 
-The maximum average number of steps is `r max(by_interval$steps)` and occurs in time period `r by_interval$interval[which.max(by_interval$steps)]`.
+The maximum average number of steps and its corresponding time period are calculated.
+
+```{r}
+max(by_interval$steps)
+by_interval$interval[which.max(by_interval$steps)]
+```
+That is, the maximum occurs between 8.35am and 8.40am
 
 ## Inputing Missing Values ##
 
-As previously stated, there are missing values for eight days: in total  `r nrow(steps_taken[!complete.cases(steps_taken),])` missing values, which with 288 intervals per day, confirms `r nrow(steps_taken[!complete.cases(steps_taken),])/288` complete days unmeasured.
+There are missing values for eight days: in total  `r nrow(steps_taken[!complete.cases(steps_taken),])` missing values, which with 288 intervals per day, confirms `r nrow(steps_taken[!complete.cases(steps_taken),])/288` complete days unmeasured.
 
 These missing values are imputed using the mean number of steps of the interval within which the missing value occurs. Added to the data table *steps_taken* is a variable, **imputed** which holds the imputed mean if *steps* is NA or the value of *steps* otherwise.
 
@@ -69,7 +77,8 @@ steps_taken$imputed <- ifelse(is.na(steps_taken$steps), steps_taken$means, steps
 A histogram of the total number of steps taken each day is shown below.
 
 ```{r fig.width=7, fig.height=6}
-hist(aggregate(imputed ~ date, steps_taken, sum)$imputed, 
+hist(aggregate(imputed ~ date, steps_taken, sum)$imputed,
+     breaks = c(0, 2500, 5000, 7500, 10000, 12500, 15000, 17500, 20000, 22500, 25000),
      main="Total number of steps per day (Inputed data)",
      xlab = "Steps per day")
 mean_steps_imp <- mean(data.table(aggregate(imputed ~ date, steps_taken, sum, na.rm=TRUE))$imputed)
@@ -78,20 +87,21 @@ median_steps_imp <- median(data.table(aggregate(imputed ~ date, steps_taken, sum
 The mean total number of steps per day is:
 
 ```{r}
-mean_steps_imp
+print(mean_steps_imp, digits=6)
 ```
 
 The median total number of steps per day is:
 
 ```{r}
-median_steps_imp
+print(median_steps_imp, digits=6)
 ```
 
-Inspection reveals that initially there were 8 missing days now have reported means and medians with the medians non-zero for the days with iputed values. This contrasts with other days where zeroes make up at least 50% of daily measuments.
+Inspection reveals that initially there were data missing from eight days. The effect of imputing the mean value of the time period into all time periods of these eight days will have the following effect:
 
-Clearly, there should be no differences, other than for the eight days with imputed step measurements, between the original daily means and the daily means with imputed values. This is confirmed in the following table comparing the means before and after imputation:
-
-The impact of the imputation is to provide measurements for eight complete days where no steps were measured. A better imputation regime could take account of the presence 50% of time periods there were zero steps measured, perhaps relating to resting, sleeping and other non-movement activities.
+- The mean is unchanged since mean values were imputed.
+- The median has been increased slightly. It is noted that many time periods related to sleeping and other sedentary activities will have zero steps recorded. Replacing values that would usually be zero with non-zero values will push the median upwards.
+- There are more observations in the 10000 to 15000 range
+- The data appears a little more symmetric about the mean
 
 ## Weekday and Weekend Activity Patterns ##
 
